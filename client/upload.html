@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en-IN">
+
+<head>
+    <meta charset="UTF-8">
+    <title>FM_Client</title>
+    <link rel="icon" type="image/x-icon" href="file_manager.ico">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;1,500&family=IBM+Plex+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+    
+    body{
+        padding: 0;
+        margin: 0;
+        background-color: #152238;
+        font-family: 'IBM Plex Sans', sans-serif;
+    }
+
+    h2, h3, p.section-title{
+        font-family: 'Fraunces', serif;
+        font-weight: 600;
+    }
+
+    p.section-title{
+        font-size: 18px;
+        margin-bottom: 20px;
+    }
+
+    .header{
+        display: flex;
+        align-items: center;
+        height: 40px;
+        color: #FFFFFF;
+        background-color: #16223b;
+        border-bottom: 1px solid #2A3654;
+    }
+
+    .header h2{
+        font-family: 'Fraunces', serif;
+        font-style: italic;
+        font-weight: 600;
+        font-size: 19px;
+    }
+
+    .header img{
+        float: left;
+        margin: 0 15px 0 10px;
+    }
+
+    .header .header_btn{
+        margin-left: auto;
+    }
+
+    .header .header_btn button{
+        border: none;
+        margin: 5px;
+        height: 25px;
+        width: 100px;
+        border-radius: 5px;
+        background-color:#152238;
+        color: #b8892b;
+    }
+    
+    .upload_card{
+        position: relative;
+        margin: auto;
+        background-color: #f4eedf;
+        color: #1F2436;
+        width: 100%;
+        max-width: 500px;
+        border-radius: 12px;
+        border: 1px solid #2D3F63;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        padding: 32px;
+
+    }
+
+    .upload_card::before{
+        content: "";
+        position: absolute;
+        top: -16px;
+        left: 22px;
+        width: 30px;
+        height: 30px;
+        background: #B8892B;
+        transform: rotate(45deg);
+    }
+    
+    #uploadControls{
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 12px;
+    }
+
+    h1{
+        color: aliceblue;
+    }
+    p{
+        color:#1F2436;
+    }
+
+    
+    select,input[type="text"]{
+        font-family: inherit;
+        font-size: 12px;
+        color: #1F2436;
+        background: #ffffff;
+        border: 1px solid #C9BE9E;
+        border-radius: 4px;
+        padding: 7px 10px;
+        outline: none;
+    }
+
+    select:focus,
+    input[type="text"]:focus{
+        border-color: #B8892B;
+    }
+
+    #sortselect{
+        margin-left: auto;
+        cursor: pointer;
+    }
+
+    #searchInput{
+        width: 100%;
+        box-sizing: border-box;
+        margin: 14px 0 4px;
+    }
+
+    table{
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 12px;
+        font-size: 13px;
+    }
+
+    thead th{
+        text-align: left;
+        font-size: 11px;
+        font-weight: 500;
+        color: #8b8367;
+        padding: 0 4px 8px;
+        border-bottom: 1px solid #d9cfa9;
+        white-space: nowrap;
+    }
+
+    thead th:nth-child(2),
+    thead th:nth-child(3){
+        text-align: right;
+    }
+
+    tbody td{
+        padding: 11px 4px;
+        border-bottom: 1px solid #e4dbbe;
+        color: #1F2436;
+    }
+
+    tbody tr:last-child td{
+        border-bottom: none;
+    }
+
+    tbody td:nth-child(2),
+    tbody td:nth-child(3){
+        text-align: right;
+        color: #6B6455;
+        font-size: 12px;
+        white-space: nowrap;
+    }
+
+    tbody td:last-child{
+        text-align: right;
+        white-space: nowrap;
+    }
+
+    tbody td:last-child button{
+        background: none;
+        border: none;
+        padding: 0;
+        margin-left: 10px;
+        font-size: 12px;
+        color: #b8892b;
+        cursor: pointer;
+    }
+
+    tbody td:last-child button:first-child{
+        margin-left: 0;
+    }
+
+    tbody td:last-child button:hover{
+        text-decoration: underline;
+    }
+
+    tbody td:last-child button.delete-action {
+        color: #9C4A3C;
+    }
+
+    .spinner {
+        border: 4px solid #d9cfa9;
+        border-top: 4px solid #B8892B;
+        border-radius: 50%;
+        width: 24px;
+        height: 24px;
+        animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+</style>
+</head>
+
+<body>
+    <div class = "header">
+        <img src="file_manager.png" alt="logo" height="35px" width="35px">
+        <h2>FILE MANAGER</h2>
+        <div class="header_btn">
+            <button class="logout_btn" onclick="logout()">LOGOUT</button> 
+        </div>
+    </div>
+    <br>
+
+    <div class ="upload_card">
+    <p class="section-title">UPLOAD</p>
+    <div id="uploadControls">
+        <p>ADD FILE</p>
+        <input type="file" id="fileInput" style="display: none;" multiple>
+        <img src="add.png" alt="add file" width="50px" style="cursor: pointer;" onclick="document.getElementById('fileInput').click();"> 
+        <select id="sortselect">
+            <option value="newest">Newest First</option>
+            <option value="oldest">Oldest First</option>
+            <option value="az">A-Z</option>
+            <option value="za">Z-A</option>
+        </select>
+    </div>
+
+    <input type="text" id="searchInput" placeholder="Search by filename...">
+    <div id="spinner" style="display:none;">Loading...</div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>FILE NAME</th>
+                <th>SIZE</th>
+                <th>UPLOADED AT</th>
+                <th>ACTIONS</th>
+            </tr>
+        </thead>
+        <tbody id="filelist"></tbody>
+</table>
+</div>
+<p id="response"></p>
+
+
+<script>
+const fileInput = document.getElementById("fileInput");
+const token = localStorage.getItem('authentication');
+let cleanupTimerId;
+let allfiles = [];
+
+
+if (!token) {
+        window.location.href = "login.html";
+}
+
+
+function logout() {
+    clearTimeout(cleanupTimerId);
+    localStorage.removeItem('authentication');
+    window.location.href = "login.html";
+}
+
+
+function scheduleTokenCleanup(){
+    const parts = token.split('.');
+    const payload = JSON.parse(atob(parts[1]));
+    const expiryTimeMs = payload.exp * 1000;
+    const remainingMs = expiryTimeMs - Date.now();
+
+    if (remainingMs <= 0) {
+        localStorage.removeItem('authentication');
+    } else {
+        cleanupTimerId = setTimeout(() => {
+        localStorage.removeItem('authentication');
+        }, remainingMs);
+    }
+}
+
+
+
+fileInput.addEventListener("change", handleUpload);
+
+document.getElementById("sortselect").addEventListener("change", (event) => {
+    renderFileList(event.target.value);
+});
+
+document.getElementById("searchInput").addEventListener("input", () => {
+    renderFileList(document.getElementById("sortselect").value);
+});
+
+
+
+async function loadfilelist(){
+    document.getElementById("spinner").style.display = "block";
+    try{
+        const response = await fetch("http://localhost:3000/api/files",{
+            headers:{
+                "Authorization": "Bearer " + token
+            }
+        });
+
+        const data = await response.json();
+        allfiles = data.files;
+        renderFileList(document.getElementById("sortselect").value);
+    }finally{
+         document.getElementById("spinner").style.display = "none";
+    }
+}
+
+
+function renderFileList(sorttype){
+    const searchText = document.getElementById("searchInput").value;
+
+    const filtered = allfiles.filter(file => 
+        file.original_name.toLowerCase().includes(searchText.toLowerCase())
+    );
+    
+    if (sorttype === "newest"){
+        filtered.sort((a, b)=> new Date(b.uploaded_at) - new Date(a.uploaded_at));
+    }else if(sorttype === "oldest"){
+        filtered.sort((a, b)=> new Date(a.uploaded_at) - new Date(b.uploaded_at));
+    }else if(sorttype === "az"){
+        filtered.sort((a, b)=> a.original_name.localeCompare(b.original_name));
+    }else if(sorttype === "za"){
+        filtered.sort((a, b)=> b.original_name.localeCompare(a.original_name));
+    }
+
+    const tbody = document.getElementById("filelist");
+    let rowHTML = "";
+
+    for(const file of filtered){
+        let sizeInMb = file.size/ (1024*1024);
+        let uploadDate = new Date(file.uploaded_at).toLocaleDateString();
+        rowHTML += `<tr>
+            <td>${file.original_name}</td>
+            <td>${sizeInMb.toFixed(2)}MB</td>
+            <td>${uploadDate}</td>
+            <td><button class="delete-action" onclick="deleteFile(${file.id})">Delete</button>
+                <button onclick="renameFile(${file.id})">Rename</button>
+                <button onclick="downloadFile(${file.id}, '${file.original_name}')">Download</button>
+            </td></tr>`;
+    }
+    tbody.innerHTML = rowHTML;
+}
+
+
+
+async function handleUpload(event){
+    event.preventDefault();
+
+    const selectedFiles = fileInput.files;
+    const formData = new FormData();
+    for (const file of selectedFiles) {
+        formData.append("files", file);
+    }
+
+    document.getElementById("spinner").style.display = "block";
+    try{
+        const response = await fetch("http://localhost:3000/api/upload", {
+            method: "POST",
+            headers:{
+                "Authorization": "Bearer " + token
+            },
+            body: formData
+        });
+
+        const data = await response.json();
+        document.getElementById("response").innerHTML=data.message;
+
+        await loadfilelist();
+    }finally{
+         document.getElementById("spinner").style.display = "none";
+    }
+}
+
+
+
+async function deleteFile(id) {
+    if (!confirm("Delete this file?")) {
+        return;
+    }
+    const response = await fetch(`http://localhost:3000/api/files/${id}`, {
+        method: "DELETE",
+        headers: {
+            "Authorization": "Bearer " + token
+        }
+    });
+    const data = await response.json();
+    document.getElementById("response").innerHTML = data.message;
+    await loadfilelist();
+}
+
+
+async function renameFile(id) {
+    const newName = prompt("Enter new file name:");
+    if (!newName) {
+        return;
+    }
+    
+    const response = await fetch(`http://localhost:3000/api/files/${id}`, {
+        method: "PATCH",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token
+        },
+        body: JSON.stringify({new_name: newName})
+    });
+    const data = await response.json();
+    document.getElementById("response").innerHTML = data.message;
+    await loadfilelist();
+}
+
+
+async function downloadFile(id, filename) {
+    const response = await fetch(`http://localhost:3000/api/files/${id}/download`, {
+        headers: {
+            "Authorization": "Bearer " + token
+        }
+    });
+    
+    const blob = await response.blob();
+    const url = URL.createObjectURL(blob);
+    
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = filename;
+    link.click();
+    
+    URL.revokeObjectURL(url);
+}
+
+scheduleTokenCleanup(token);
+loadfilelist();
+</script>
+</body>
+</html>

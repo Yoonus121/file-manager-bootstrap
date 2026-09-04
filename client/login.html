@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en-IN">
+
+<head>
+    <meta charset="UTF-8">
+    <title>FM_Client</title>
+    <link rel="icon" type="image/x-icon" href="file_manager.ico">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;1,500&family=IBM+Plex+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+    
+    body{
+        padding: 0;
+        margin: 0;
+        background-color: #10192e;
+        font-family: 'IBM Plex Sans', sans-serif;
+    }
+
+    .header{
+        display: flex;
+        align-items: center;
+        height: 40px;
+        align-items: auto;
+        color: #FFFFFF;
+        background-color: #16223b;
+        border-bottom: 1px solid #2A3654;
+    }
+
+    .header h2{
+        font-family: 'Fraunces', serif;
+        font-style: italic;
+        font-weight: 600;
+        font-size: 19px;
+        color: #F3EFE4;
+    }
+
+    .header img{
+        float: left;
+        margin: 0 15px 0 10px;
+    }
+
+    .header .header_btn{
+        margin-left: auto;
+    }
+
+    .header .header_btn button{
+        border: none;
+        margin: 5px;
+        height: 25px;
+        width: 100px;
+        border-radius: 5px;
+        background-color:#16223b;
+        color: #B8892B;
+        
+    }
+    
+    .login_card{
+        position: relative;
+        margin: auto;
+        background-color: #F4EEDF;
+        color: #1F2436;
+        width: 100%;
+        max-width: 400px;
+        border-radius: 12px;
+        border: 1px solid #2D3F63;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        padding: 32px;
+
+    }
+
+    .login_card::before{
+        content: "";
+        position: absolute;
+        top: -16px;
+        left: 22px;
+        width: 30px;
+        height: 30px;
+        background: #B8892B;
+        transform: rotate(45deg);
+    }
+    
+    .login_card p.section-title {
+        font-family: 'Fraunces', serif;
+        font-weight: 600;
+        font-size: 18px;
+        margin-bottom: 20px;
+    }
+
+    .login_card p{
+        color: #1F2436;
+    }
+
+    input[type="text"],
+    input[type="password"] {
+        font-family: inherit;
+        font-size: 12px;
+        color: #1F2436;
+        background: #FFFFFF;
+        border: 1px solid #C9BE9E;
+        border-radius: 4px;
+        padding: 7px 10px;
+        outline: none;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    input[type="text"]:focus,
+    input[type="password"]:focus {
+        border-color: #B8892B;
+    }
+
+    input[type="submit"] {
+        font-family: inherit;
+        background: #B8892B;
+        color: #1F2436;
+        border: none;
+        border-radius: 4px;
+        padding: 9px 0;
+        margin-top: 4px;
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 500;
+    }
+
+    input[type="submit"]:hover {
+        background: #A87B22;
+    }
+
+    #loginForm{
+        display: flex;
+        flex-direction: column;
+        
+    }
+
+    h1{
+        color: aliceblue;
+    }
+    p{
+        color:aliceblue;
+    }
+</style>
+</head>
+
+<body>
+    <div class = "header">
+        <img src="file_manager.png" alt="logo" height="35px" width="35px">
+        <h2>FILE MANAGER</h2>
+        <div class="header_btn">
+            <button class="register_btn" onclick="goToRegister()">REGISTER</button>
+        </div>
+    </div>
+    <br>
+
+    <div class ="login_card">
+    <p class="section-title">LOG IN</p>
+    <form id="loginForm">
+        <p>enter gmail</p>
+        <input type="text" id="email">
+        <p>enter password</p>
+        <input type="password" id="password">
+        <input type="submit"> 
+    </form>
+    </div>
+    <p id="response"></p>
+
+
+<script>
+const loginForm = document.getElementById("loginForm");
+
+function goToRegister() {
+    window.location.href = "register.html";
+}
+
+async function handleLoginSubmit(event){
+    event.preventDefault();
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+
+    if (!email || !password) {
+        document.getElementById("response").innerHTML = "All fields are required";
+        return;
+    }
+    if (!email.includes("@")) {
+        document.getElementById("response").innerHTML = "Please enter a valid email";
+        return;
+    }
+
+    const response = await fetch("http://localhost:3000/api/login", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({mail:email,pass:password})
+    });
+
+    const data = await response.json();
+    document.getElementById("response").innerHTML=data.message;
+    
+    if(data.token){
+        localStorage.setItem('authentication', data.token);
+        window.location.href = "upload.html";
+    }
+}
+loginForm.addEventListener("submit", handleLoginSubmit);
+</script>
+</body>
+</html>
